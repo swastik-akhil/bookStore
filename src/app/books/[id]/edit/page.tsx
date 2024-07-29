@@ -2,10 +2,9 @@
 
 import { FC, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation'; // Import from 'next/navigation'
-import { prisma } from '../../../../lib/prisma';
 
 const EditBook: FC = () => {
-  const { id } = useParams(); // Use useParams to get dynamic route parameters
+  const { id } = useParams() as { id?: string }; // Use type assertion
   const router = useRouter();
   
   const [book, setBook] = useState<any>(null);
@@ -17,15 +16,17 @@ const EditBook: FC = () => {
   useEffect(() => {
     const fetchBook = async () => {
       try {
-        const response = await fetch(`/api/books/${id}`);
-        if (response.ok) {
-          const data = await response.json();
-          setBook(data);
-          setTitle(data.title);
-          setAuthor(data.author);
-          setDescription(data.description);
-        } else {
-          throw new Error('Failed to fetch book');
+        if (id) {
+          const response = await fetch(`/api/books/${id}`);
+          if (response.ok) {
+            const data = await response.json();
+            setBook(data);
+            setTitle(data.title);
+            setAuthor(data.author);
+            setDescription(data.description);
+          } else {
+            throw new Error('Failed to fetch book');
+          }
         }
       } catch (error) {
         setError('Failed to fetch book');
@@ -33,26 +34,26 @@ const EditBook: FC = () => {
       }
     };
 
-    if (id) {
-      fetchBook();
-    }
+    fetchBook();
   }, [id]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      const response = await fetch(`/api/books/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ title, author, description }),
-      });
+      if (id) {
+        const response = await fetch(`/api/books/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ title, author, description }),
+        });
 
-      if (response.ok) {
-        router.push('/');
-      } else {
-        throw new Error('Failed to update book');
+        if (response.ok) {
+          router.push('/');
+        } else {
+          throw new Error('Failed to update book');
+        }
       }
     } catch (error) {
       setError('Failed to update book');
