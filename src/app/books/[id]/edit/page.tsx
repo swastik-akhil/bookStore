@@ -2,7 +2,7 @@
 
 import { FC, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation'; // Use next/navigation instead of next/router
-import { prisma } from '../../../lib/prisma';
+import { prisma } from '../../../../lib/prisma';
 
 const EditBook: FC = () => {
   const router = useRouter();
