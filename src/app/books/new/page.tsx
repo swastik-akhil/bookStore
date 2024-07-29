@@ -3,6 +3,7 @@
 import { FC, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 const NewBook: FC = () => {
   const router = useRouter();
   const [title, setTitle] = useState('');
@@ -14,7 +15,7 @@ const NewBook: FC = () => {
     event.preventDefault();
 
     try {
-      const response = await fetch('/api/books', {
+      const response = await fetch(`${apiUrl}/api/books`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

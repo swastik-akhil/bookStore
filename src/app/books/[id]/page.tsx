@@ -3,6 +3,7 @@
 import { FC, useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation'; 
 
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 const BookDetails: FC = () => {
   const router = useRouter();
   const { id } = useParams() as { id?: string }; 
@@ -14,7 +15,7 @@ const BookDetails: FC = () => {
 
     const fetchBook = async () => {
       try {
-        const response = await fetch(`/api/books/${id}`);
+        const response = await fetch(`${apiUrl}/api/books/${id}`);
         if (response.ok) {
           const data = await response.json();
           setBook(data);

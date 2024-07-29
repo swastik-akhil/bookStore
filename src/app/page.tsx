@@ -2,6 +2,7 @@
 
 import { FC, useEffect, useState } from 'react';
 import Link from 'next/link';
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 const HomePage: FC = () => {
   const [books, setBooks] = useState<any[]>([]);
@@ -12,7 +13,7 @@ const HomePage: FC = () => {
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const response = await fetch('/api/books');
+        const response = await fetch(`${apiUrl}/api/books`);
         if (response.ok) {
           const data = await response.json();
           setBooks(data);
