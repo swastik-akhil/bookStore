@@ -1,11 +1,13 @@
 "use client"; // Ensure this is added at the top
 
-import { FC, useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation'; // Adjusted import
+import { FC, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation'; // Use next/navigation instead of next/router
+import { prisma } from '../../../lib/prisma';
 
 const EditBook: FC = () => {
   const router = useRouter();
-  const { id } = useParams(); // Use useParams to get dynamic route parameters
+  const { id } = router.query as { id: string };
+
   const [book, setBook] = useState<any>(null);
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
@@ -13,8 +15,6 @@ const EditBook: FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!id) return; // Skip fetching if id is not available
-
     const fetchBook = async () => {
       try {
         const response = await fetch(`/api/books/${id}`);
@@ -25,28 +25,32 @@ const EditBook: FC = () => {
           setAuthor(data.author);
           setDescription(data.description);
         } else {
-          throw new Error('Failed to fetch book details');
+          throw new Error('Failed to fetch book');
         }
       } catch (error) {
-        setError('Failed to fetch book details');
+        setError('Failed to fetch book');
         console.error('Error fetching book:', error);
       }
     };
 
-    fetchBook();
+    if (id) {
+      fetchBook();
+    }
   }, [id]);
 
-  const handleSubmit = async (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     try {
       const response = await fetch(`/api/books/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ title, author, description }),
       });
+
       if (response.ok) {
-        router.push(`/books/${id}`);
+        router.push('/');
       } else {
         throw new Error('Failed to update book');
       }
@@ -56,63 +60,54 @@ const EditBook: FC = () => {
     }
   };
 
-  const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this book?')) return;
-
-    try {
-      const response = await fetch(`/api/books/${id}`, {
-        method: 'DELETE',
-      });
-      if (response.ok) {
-        router.push('/'); // Redirect to the homepage or list page
-      } else {
-        throw new Error('Failed to delete book');
-      }
-    } catch (error) {
-      setError('Failed to delete book');
-      console.error('Error deleting book:', error);
-    }
-  };
-
-  if (error) return <p className="text-red-500">{error}</p>;
-  if (!book) return <p>Loading...</p>;
+  if (error) {
+    return <p className="text-red-500 text-center">{error}</p>;
+  }
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold">Edit Book</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="max-w-2xl mx-auto p-6">
+      <h1 className="text-3xl font-bold text-gray-900">Edit Book</h1>
+      <form onSubmit={handleSubmit} className="mt-6 space-y-4">
         <div>
-          <label htmlFor="title" className="block text-lg">Title</label>
+          <label htmlFor="title" className="block text-lg font-medium text-gray-700">Title</label>
           <input
             id="title"
             type="text"
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="border px-3 py-2 w-full"
+            required
           />
         </div>
         <div>
-          <label htmlFor="author" className="block text-lg">Author</label>
+          <label htmlFor="author" className="block text-lg font-medium text-gray-700">Author</label>
           <input
             id="author"
             type="text"
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
             value={author}
             onChange={(e) => setAuthor(e.target.value)}
-            className="border px-3 py-2 w-full"
+            required
           />
         </div>
         <div>
-          <label htmlFor="description" className="block text-lg">Description</label>
+          <label htmlFor="description" className="block text-lg font-medium text-gray-700">Description</label>
           <textarea
             id="description"
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="border px-3 py-2 w-full"
+            rows={4}
+            required
           />
         </div>
-        <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-md">Update Book</button>
+        <button
+          type="submit"
+          className="inline-flex items-center px-4 py-2 bg-green-600 text-white font-semibold rounded-md shadow-sm hover:bg-green-700 transition-colors"
+        >
+          Update Book
+        </button>
       </form>
-      <button onClick={handleDelete} className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md">Delete Book</button>
     </div>
   );
 };
