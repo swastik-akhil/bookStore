@@ -1,13 +1,13 @@
 "use client"; // Ensure this is added at the top
 
 import { FC, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation'; // Use next/navigation instead of next/router
+import { useParams, useRouter } from 'next/navigation'; // Import from 'next/navigation'
 import { prisma } from '../../../../lib/prisma';
 
 const EditBook: FC = () => {
+  const { id } = useParams(); // Use useParams to get dynamic route parameters
   const router = useRouter();
-  const { id } = router.query as { id: string };
-
+  
   const [book, setBook] = useState<any>(null);
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
