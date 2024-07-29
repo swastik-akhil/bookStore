@@ -1,10 +1,10 @@
-"use client"; // Ensure this is added at the top
+"use client"; 
 
 import { FC, useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation'; // Import from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation';
 
 const EditBook: FC = () => {
-  const { id } = useParams() as { id?: string }; // Use type assertion
+  const { id } = useParams() as { id?: string };
   const router = useRouter();
   
   const [book, setBook] = useState<any>(null);

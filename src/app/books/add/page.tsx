@@ -1,4 +1,4 @@
-"use client"; // Ensure this is added at the top
+"use client";
 
 import { FC, useState } from 'react';
 import { useRouter } from 'next/navigation';

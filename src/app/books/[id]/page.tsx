@@ -1,11 +1,11 @@
-"use client"; // Ensure this is added at the top
+"use client";
 
 import { FC, useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation'; // Adjusted import
+import { useRouter, useParams } from 'next/navigation'; 
 
 const BookDetails: FC = () => {
   const router = useRouter();
-  const { id } = useParams();
+  const { id } = useParams() as { id?: string }; 
   const [book, setBook] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 

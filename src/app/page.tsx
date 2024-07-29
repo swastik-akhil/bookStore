@@ -1,4 +1,4 @@
-"use client"; // Ensure this is added at the top
+"use client"; 
 
 import { FC, useEffect, useState } from 'react';
 import Link from 'next/link';

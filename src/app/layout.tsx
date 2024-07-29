@@ -1,8 +1,8 @@
-"use client"; // This directive tells Next.js that this is a Client Component
+"use client"; 
 
 import { FC, ReactNode } from 'react';
 import '../styles/globals.css';
-import Header from '../components/Header'; // Adjust the path as necessary
+import Header from '../components/Header'; 
 
 
 const RootLayout: FC<{ children: ReactNode }> = ({ children }) => {
