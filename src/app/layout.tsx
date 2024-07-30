@@ -11,7 +11,7 @@ const RootLayout: FC<{ children: ReactNode }> = ({ children }) => {
       <head>
         <title>Next.js Bookstore</title>
       </head>
-      <body className="min-h-screen bg-gray-100 p-4">
+      <body className="min-h-screen bg-lime-100 p-4">
         <header className="bg-white shadow">
           {/* <div className="mx-auto p-4 bg-orange-200">
             <h1 className="text-2xl font-bold text-center">Next.js Bookstore</h1>
