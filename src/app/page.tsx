@@ -71,15 +71,18 @@ const HomePage: FC = () => {
       {error && <p className="text-red-500 text-center">{error}</p>}
       <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredBooks.map(book => (
-          <li key={book.id} className="bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden transition-transform transform hover:scale-105">
-            <div className="p-6">
-              <h2 className="text-2xl font-bold text-gray-800">{book.title}</h2>
-              <p className="mt-1 text-lg text-gray-600">by {book.author}</p>
-              <p className="mt-2 text-gray-700">{book.description}</p>
-              <Link href={`/books/${book.id}`} className="mt-4 inline-block px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-                View Details
-              </Link>
-            </div>
+          <li key={book.id} className="bg-stone-100 white border border-gray-200 rounded-lg shadow-md overflow-hidden transition-transform transform hover:scale-105">
+      <div className="p-6 bg-white shadow-lg rounded-lg">
+        <h2 className="text-3xl font-extrabold text-indigo-800">{book.title}</h2>
+        <p className="mt-1 text-xl font-medium text-gray-700">by {book.author}</p>
+        <p className="mt-2 text-base font-light text-gray-600">{book.description}</p>
+        <Link 
+          href={`/books/${book.id}`} 
+          className="mt-4 inline-block px-6 py-3 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition-colors"
+        >
+          View Details
+        </Link>
+      </div>
           </li>
         ))}
       </ul>
