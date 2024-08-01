@@ -1,91 +1,101 @@
-"use client"; 
+"use client";
 
-import { FC, useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-const HomePage: FC = () => {
+const HomePage = () => {
   const [books, setBooks] = useState<any[]>([]);
-  const [filteredBooks, setFilteredBooks] = useState<any[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true); // Loading state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const router = useRouter();
 
   useEffect(() => {
-    const fetchBooks = async () => {
+    const fetchBooks = async (page: number) => {
+      setLoading(true); // Set loading to true when fetching starts
       try {
-        const response = await fetch(`${apiUrl}/api/books`);
+        const response = await fetch(`/api/books?page=${page}&limit=3`);
         if (response.ok) {
           const data = await response.json();
-          setBooks(data);
-          setFilteredBooks(data); // Initialize filteredBooks with all books
+          setBooks(data.books);
+          setTotalPages(data.totalPages);
+          setCurrentPage(data.currentPage);
         } else {
           throw new Error('Failed to fetch books');
         }
       } catch (error) {
         setError('Failed to fetch books');
         console.error('Error fetching books:', error);
+      } finally {
+        setLoading(false); // Set loading to false when fetching completes
       }
     };
 
-    fetchBooks();
-  }, []);
+    fetchBooks(currentPage);
+  }, [currentPage]);
 
-  useEffect(() => {
-    if (searchTerm) {
-      const lowercasedSearchTerm = searchTerm.toLowerCase();
-      const filtered = books.filter(book =>
-        book.title.toLowerCase().includes(lowercasedSearchTerm) ||
-        book.author.toLowerCase().includes(lowercasedSearchTerm)
-      );
-      setFilteredBooks(filtered);
-    } else {
-      setFilteredBooks(books);
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
     }
-  }, [searchTerm, books]);
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  if (loading) return <p className="text-center text-lg font-medium mt-4">Loading Books...</p>;
+
+  if (error) return <p className="text-red-500 text-center mt-4 text-lg font-medium">{error}</p>;
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
-      <header className="text-center mb-8">
-        {/* <div className="mx-auto p-4 bg-orange-200"> */}
-          {/* <Link href="/" className="block text-2xl font-bold text-center text-gray-800">
-            Next.js Bookstore
-          </Link> */}
-        {/* </div> */}
-        <h1 className="text-4xl font-extrabold text-gray-900">Welcome to the Bookstore</h1>
-        <p className="mt-2 text-xl text-gray-600">Explore our collection of books</p>
-        <Link href="/books/add" className="mt-4 inline-block px-6 py-3 bg-green-600 text-white font-semibold rounded-md shadow-md hover:bg-green-700 transition-colors">
-          Add New Book
-        </Link>
-      </header>
-
-      <div className="mb-6">
-        <input
-          type="text"
-          placeholder="Search by title or author"
-          className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
-
-      {error && <p className="text-red-500 text-center">{error}</p>}
-      <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredBooks.map(book => (
-          <li key={book.id} className="bg-stone-100 white border border-gray-200 rounded-lg shadow-md overflow-hidden transition-transform transform hover:scale-105">
-      <div className="p-6 bg-white shadow-lg rounded-lg">
-        <h2 className="text-3xl font-extrabold text-indigo-800">{book.title}</h2>
-        <p className="mt-1 text-xl font-medium text-gray-700">by {book.author}</p>
-        <p className="mt-2 text-base font-light text-gray-600">{book.description}</p>
-        <Link 
-          href={`/books/${book.id}`} 
-          className="mt-4 inline-block px-6 py-3 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition-colors"
-        >
-          View Details
+    <div className="container mx-auto p-6">
+      <div className="text-center mb-8">
+        <Link href="/books/add" legacyBehavior>
+          <a className="inline-block px-8 py-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-full shadow-lg hover:from-teal-600 hover:to-teal-700 transition duration-700 text-lg font-semibold">
+            Add Book
+          </a>
         </Link>
       </div>
-          </li>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {books.map((book) => (
+          <div key={book.id} className="relative bg-white rounded-lg border border-gray-300 shadow-lg overflow-hidden transition-transform transform hover:scale-105 hover:shadow-xl group">
+            <div className="absolute inset-0 bg-gradient-to-r from-teal-50 to-transparent opacity-20 group-hover:opacity-40 transition-opacity duration-700"></div>
+            <div className="relative p-6 flex flex-col h-full">
+              
+              <h2 className="text-3xl font-extrabold mb-3 text-gray-900 tracking-tight">{book.title}</h2>
+              <p className="text-gray-800 mb-4 text-lg italic">by {book.author}</p>
+              <p className="text-gray-600 leading-relaxed text-base flex-grow">{book.description}</p>
+              <Link href={`/books/${book.id}`} legacyBehavior>
+                <a className="mt-auto text-teal-500 hover:text-teal-600 font-medium text-lg transition duration-300 group-hover:underline">
+                  View Details
+                </a>
+              </Link>
+              
+            </div>
+          </div>
         ))}
-      </ul>
+      </div>
+      <div className="flex justify-center gap-4 mt-8">
+        <button
+          onClick={handlePreviousPage}
+          disabled={currentPage === 1}
+          className="px-6 py-3 bg-gradient-to-r from-gray-300 to-gray-400 text-gray-800 rounded-full shadow-sm hover:from-gray-400 hover:to-gray-500 transition duration-300 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Previous
+        </button>
+        <button
+          onClick={handleNextPage}
+          disabled={currentPage === totalPages}
+          className="px-6 py-3 bg-gradient-to-r from-gray-300 to-gray-400 text-gray-800 rounded-full shadow-sm hover:from-gray-400 hover:to-gray-500 transition duration-300 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 };

@@ -12,12 +12,12 @@ const RootLayout: FC<{ children: ReactNode }> = ({ children }) => {
         <title>Next.js Bookstore</title>
       </head>
       <body className="min-h-screen bg-lime-100 p-4">
-        <header className="bg-white shadow">
+        {/* <header className="bg-white shadow"> */}
           {/* <div className="mx-auto p-4 bg-orange-200">
             <h1 className="text-2xl font-bold text-center">Next.js Bookstore</h1>
           </div> */}
           <Header />
-        </header>
+        {/* </header> */}
         <main className="container mx-auto mt-4">{children}</main>
       </body>
     </html>
